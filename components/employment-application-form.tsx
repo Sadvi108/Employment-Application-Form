@@ -159,12 +159,27 @@ export function EmploymentApplicationForm() {
     }
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validateCurrentStep()) return
 
-    // Log form data for demonstration
-    console.log("Employment Application Submitted:", formData)
-    setIsSubmitted(true)
+    try {
+      const response = await fetch("http://localhost:5000/api/submit-application", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to submit application")
+      }
+
+      setIsSubmitted(true)
+    } catch (error) {
+      alert("Error submitting application: " + (error as Error).message)
+    }
   }
 
   const resetForm = () => {
